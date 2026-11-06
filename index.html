@@ -1,0 +1,438 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Diagnostik Tata Surya</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Trebuchet MS', sans-serif; }
+    .visual { background: linear-gradient(135deg,#e0f2fe,#f5f3ff); }
+    .question-card { transition: .2s; }
+    input[type="radio"] { accent-color: #7c3aed; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-sky-100 via-purple-50 to-amber-100 text-slate-800">
+  <main class="max-w-4xl mx-auto p-4 md:p-8">
+    <header class="text-center mb-6">
+      <div class="text-5xl mb-2">🌍☀️🌙</div>
+      <h1 class="text-3xl md:text-4xl font-extrabold text-violet-800">Kuis Diagnostik Tata Surya</h1>
+      <p class="mt-2 text-slate-600">Rotasi Bumi, Revolusi Bumi, Siang dan Malam</p>
+    </header>
+
+    <!-- Bagian identitas siswa -->
+    <section id="identity" class="bg-white rounded-3xl shadow-lg p-5 md:p-7">
+      <h2 class="text-xl font-bold text-violet-700 mb-4">🧑‍🚀 Identitas Siswa</h2>
+      <div class="grid md:grid-cols-3 gap-4">
+        <label class="block">
+          <span class="font-semibold text-sm">Nama lengkap</span>
+          <input id="studentName" class="mt-1 w-full border-2 border-violet-200 rounded-xl p-3 focus:outline-none focus:border-violet-500" placeholder="Masukkan nama" required>
+        </label>
+        <label class="block">
+          <span class="font-semibold text-sm">Nomor absen</span>
+          <input id="studentNumber" type="number" min="1" class="mt-1 w-full border-2 border-violet-200 rounded-xl p-3 focus:outline-none focus:border-violet-500" placeholder="Nomor absen" required>
+        </label>
+        <label class="block">
+          <span class="font-semibold text-sm">Kelas</span>
+          <input id="studentClass" class="mt-1 w-full border-2 border-violet-200 rounded-xl p-3 focus:outline-none focus:border-violet-500" placeholder="Contoh: VII A" required>
+        </label>
+      </div>
+
+      <div class="mt-5 rounded-2xl bg-amber-50 border border-amber-200 p-4">
+        <h3 class="font-bold text-amber-800">📘 Petunjuk Pengerjaan</h3>
+        <ul class="list-disc pl-5 mt-2 space-y-1 text-sm">
+          <li>Kuis terdiri dari 20 soal dengan tingkat mudah, sedang, dan sulit.</li>
+          <li>Bacalah ilustrasi dan soal dengan teliti.</li>
+          <li>Pilih atau tuliskan satu jawaban untuk setiap soal.</li>
+          <li>Tekan tombol <b>Kirim Jawaban</b> setelah semua soal selesai.</li>
+          <li>Kuis hanya dapat dikerjakan satu kali dalam satu sesi.</li>
+        </ul>
+      </div>
+      <p class="text-center text-lg font-bold text-violet-700 mt-5">✨ Selamat menjawab! ✨</p>
+      <button id="startBtn" class="mt-4 w-full rounded-2xl bg-violet-600 hover:bg-violet-700 text-white font-bold py-3 text-lg">
+        Mulai Kuis 🚀
+      </button>
+    </section>
+
+    <!-- Bagian kuis -->
+    <section id="quizSection" class="hidden mt-6">
+      <div class="sticky top-2 z-10 bg-white/95 backdrop-blur rounded-2xl shadow p-3 mb-4">
+        <div class="flex justify-between items-center gap-3">
+          <span class="font-bold text-violet-700">📝 Kuis Tata Surya</span>
+          <span id="progress" class="text-sm font-semibold text-slate-600">0/20 dijawab</span>
+        </div>
+        <div class="w-full bg-slate-200 h-2 rounded-full mt-2">
+          <div id="progressBar" class="bg-violet-500 h-2 rounded-full" style="width:0%"></div>
+        </div>
+      </div>
+      <form id="quizForm">
+        <div id="questions" class="space-y-4"></div>
+        <button id="submitBtn" type="submit" class="mt-6 w-full rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 text-lg">
+          Kirim Jawaban 🎯
+        </button>
+      </form>
+    </section>
+
+    <!-- Bagian hasil -->
+    <section id="resultSection" class="hidden mt-6 bg-white rounded-3xl shadow-xl p-5 md:p-8">
+      <div class="text-center">
+        <div class="text-5xl">🏆</div>
+        <h2 class="text-3xl font-extrabold text-violet-800 mt-2">Hasil Kuis</h2>
+        <p id="resultStudent" class="mt-2 text-lg font-semibold"></p>
+        <div class="inline-block bg-amber-100 rounded-2xl px-8 py-4 mt-4">
+          <p class="text-sm text-amber-800 font-bold">SKOR AKHIR</p>
+          <p id="score" class="text-5xl font-extrabold text-amber-600"></p>
+          <p id="scoreText" class="font-semibold text-amber-800 mt-1"></p>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <h3 class="text-xl font-bold text-violet-700">📊 Analisis Berdasarkan Tingkat Soal</h3>
+        <div id="levelAnalysis" class="grid md:grid-cols-3 gap-3 mt-3"></div>
+      </div>
+
+      <div class="mt-6 bg-sky-50 rounded-2xl p-4">
+        <h3 class="text-xl font-bold text-sky-800">🔎 Analisis Pemahaman Konsep</h3>
+        <p class="text-sm mt-1 text-slate-600">Bagian ini menunjukkan konsep yang sudah dipahami dan konsep yang perlu dipelajari kembali.</p>
+        <div id="conceptAnalysis" class="mt-3 space-y-3"></div>
+      </div>
+
+      <div class="mt-6">
+        <h3 class="text-xl font-bold text-violet-700">📖 Tinjauan Jawaban</h3>
+        <div id="answerReview" class="mt-3 space-y-3"></div>
+      </div>
+
+      <div class="mt-6 rounded-2xl bg-violet-50 p-4 text-center">
+        <p class="font-bold text-violet-800">Terima kasih telah menyelesaikan kuis! 🌟</p>
+        <p class="text-sm text-slate-600 mt-1">Hasil ini dapat digunakan untuk mengetahui konsep yang perlu dipelajari kembali.</p>
+        <button id="exitBtn" type="button" class="mt-4 bg-slate-700 hover:bg-slate-800 text-white font-bold rounded-xl px-6 py-3">
+          Keluar dari Kuis
+        </button>
+        <p id="exitMessage" class="hidden text-sm mt-3 text-slate-600">
+          Kuis telah selesai. Anda dapat menutup tab atau jendela browser ini.
+        </p>
+      </div>
+    </section>
+  </main>
+
+<script>
+  // Ilustrasi sederhana dibuat dengan SVG agar tidak membutuhkan file gambar tambahan.
+  function visualSVG(type) {
+    const drawings = {
+      rotation: `
+        <svg viewBox="0 0 320 150" class="w-full max-w-sm mx-auto" role="img" aria-label="Ilustrasi rotasi Bumi">
+          <circle cx="160" cy="75" r="55" fill="#60a5fa"/>
+          <path d="M130 30 L150 45 L145 65 L120 70 L110 90 L135 110 L160 105 L175 80 L195 75 L205 50 L180 35 Z" fill="#22c55e"/>
+          <path d="M160 15 V135 M100 75 H220" stroke="#ffffff" stroke-width="2" stroke-dasharray="5 4"/>
+          <path d="M235 60 A78 78 0 0 1 205 125" fill="none" stroke="#7c3aed" stroke-width="4"/>
+          <path d="M203 115 L205 126 L216 122" fill="none" stroke="#7c3aed" stroke-width="4"/>
+          <text x="230" y="40" font-size="13" fill="#6d28d9" font-weight="bold">Rotasi</text>
+        </svg>`,
+      orbit: `
+        <svg viewBox="0 0 320 150" class="w-full max-w-sm mx-auto" role="img" aria-label="Ilustrasi revolusi Bumi">
+          <ellipse cx="160" cy="75" rx="115" ry="55" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="5 4"/>
+          <circle cx="160" cy="75" r="24" fill="#facc15"/>
+          <g fill="#f59e0b">
+            <path d="M160 37 L165 48 L155 48 Z"/><path d="M160 113 L165 102 L155 102 Z"/>
+            <path d="M122 75 L133 70 L133 80 Z"/><path d="M198 75 L187 70 L187 80 Z"/>
+          </g>
+          <circle cx="65" cy="75" r="15" fill="#60a5fa"/>
+          <path d="M55 65 L65 70 L60 80 L72 87" stroke="#22c55e" stroke-width="5" fill="none"/>
+          <circle cx="255" cy="75" r="15" fill="#60a5fa"/>
+          <path d="M245 65 L255 70 L250 80 L262 87" stroke="#22c55e" stroke-width="5" fill="none"/>
+          <text x="115" y="18" fill="#6d28d9" font-size="12" font-weight="bold">Orbit Bumi</text>
+        </svg>`,
+      daynight: `
+        <svg viewBox="0 0 320 150" class="w-full max-w-sm mx-auto" role="img" aria-label="Ilustrasi sisi siang dan malam">
+          <circle cx="160" cy="75" r="55" fill="#60a5fa"/>
+          <path d="M160 20 A55 55 0 0 1 160 130 Z" fill="#1e293b"/>
+          <path d="M130 35 L145 48 L140 65 L120 75 L140 100 L155 95 L160 75 L150 60 Z" fill="#22c55e"/>
+          <path d="M180 45 L195 60 L185 75 L205 90 L180 110 L170 85 Z" fill="#15803d"/>
+          <circle cx="40" cy="75" r="22" fill="#facc15"/>
+          <g stroke="#facc15" stroke-width="3">
+            <path d="M40 43 V32 M40 107 V118 M8 75 H19 M61 75 H72 M17 52 L9 44 M63 98 L71 106 M17 98 L9 106 M63 52 L71 44"/>
+          </g>
+          <text x="15" y="135" fill="#92400e" font-size="12" font-weight="bold">Matahari</text>
+          <text x="120" y="145" fill="#1e293b" font-size="12">Siang</text>
+          <text x="185" y="145" fill="#1e293b" font-size="12">Malam</text>
+        </svg>`,
+      moon: `
+        <svg viewBox="0 0 320 150" class="w-full max-w-sm mx-auto" role="img" aria-label="Ilustrasi Bulan">
+          <circle cx="160" cy="75" r="50" fill="#e5e7eb"/>
+          <circle cx="140" cy="55" r="8" fill="#cbd5e1"/>
+          <circle cx="185" cy="85" r="11" fill="#cbd5e1"/>
+          <circle cx="145" cy="100" r="5" fill="#cbd5e1"/>
+          <circle cx="180" cy="48" r="6" fill="#cbd5e1"/>
+          <path d="M180 25 A50 50 0 1 0 180 125 A40 50 0 0 1 180 25" fill="#94a3b8"/>
+          <text x="15" y="25" fill="#475569" font-size="12" font-weight="bold">Bulan</text>
+        </svg>`,
+      seasons: `
+        <svg viewBox="0 0 320 150" class="w-full max-w-sm mx-auto" role="img" aria-label="Ilustrasi Bumi mengelilingi Matahari">
+          <circle cx="160" cy="75" r="25" fill="#facc15"/>
+          <ellipse cx="160" cy="75" rx="120" ry="55" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="5 4"/>
+          <g fill="#60a5fa" stroke="#22c55e" stroke-width="2">
+            <circle cx="55" cy="75" r="15"/><circle cx="265" cy="75" r="15"/>
+            <circle cx="160" cy="20" r="15"/><circle cx="160" cy="130" r="15"/>
+          </g>
+          <g stroke="#7c3aed" stroke-width="3">
+            <path d="M55 55 L65 95"/><path d="M265 55 L255 95"/>
+            <path d="M140 20 L180 20"/><path d="M140 130 L180 130"/>
+          </g>
+          <text x="115" y="145" font-size="11" fill="#6d28d9">Revolusi Bumi</text>
+        </svg>`
+    };
+    return drawings[type] || drawings.daynight;
+  }
+
+  const questions = [
+    {level:"Mudah",concept:"Rotasi Bumi",visual:"rotation",type:"mc",q:"Apa yang dimaksud dengan rotasi Bumi?",opts:["Bumi mengelilingi Matahari","Bumi berputar pada porosnya","Bulan mengelilingi Bumi","Matahari mengelilingi Bumi"],a:1,why:"Rotasi adalah gerak Bumi berputar pada porosnya."},
+    {level:"Mudah",concept:"Siang dan malam",visual:"daynight",type:"mc",q:"Peristiwa siang dan malam terutama terjadi karena ...",opts:["Bumi berotasi","Bumi berhenti bergerak","Matahari mengelilingi Bumi","Bulan menutupi Matahari setiap hari"],a:0,why:"Rotasi menyebabkan bagian Bumi bergantian menghadap dan membelakangi Matahari."},
+    {level:"Mudah",concept:"Rotasi Bumi",visual:"rotation",type:"tf",q:"Bumi berputar pada porosnya dari arah barat ke timur.",a:"true",why:"Rotasi Bumi berlangsung dari barat ke timur."},
+    {level:"Mudah",concept:"Revolusi Bumi",visual:"orbit",type:"mc",q:"Gerak Bumi mengelilingi Matahari disebut ...",opts:["Rotasi","Revolusi","Gravitasi","Orbit Bulan"],a:1,why:"Revolusi adalah gerak Bumi mengelilingi Matahari."},
+    {level:"Mudah",concept:"Siang dan malam",visual:"daynight",type:"tf",q:"Pada saat satu bagian Bumi mengalami siang, bagian lain dapat mengalami malam.",a:"true",why:"Bagian Bumi yang menghadap Matahari mengalami siang, sedangkan sisi yang tidak mendapat cahaya mengalami malam."},
+    {level:"Mudah",concept:"Revolusi Bumi",visual:"orbit",type:"fill",q:"Bumi membutuhkan sekitar ____ hari untuk mengelilingi Matahari satu kali.",a:["365","365,25","365.25"],why:"Satu kali revolusi Bumi berlangsung sekitar 365,25 hari."},
+    {level:"Mudah",concept:"Rotasi Bumi",visual:"rotation",type:"mc",q:"Waktu yang dibutuhkan Bumi untuk satu rotasi mendekati ...",opts:["24 jam","30 hari","12 bulan","365 hari"],a:0,why:"Satu rotasi Bumi kira-kira membutuhkan 24 jam."},
+
+    {level:"Sedang",concept:"Siang dan malam",visual:"daynight",type:"mc",q:"Mengapa Matahari tampak bergerak dari timur ke barat setiap hari?",opts:["Matahari mengelilingi Bumi setiap hari","Bumi berotasi dari barat ke timur","Bumi berevolusi dalam satu hari","Bulan menarik Matahari"],a:1,why:"Gerak semu harian Matahari terjadi akibat rotasi Bumi dari barat ke timur."},
+    {level:"Sedang",concept:"Rotasi Bumi",visual:"rotation",type:"fill",q:"Perbedaan waktu di berbagai wilayah Bumi berkaitan dengan ____ Bumi.",a:["rotasi"],why:"Rotasi menyebabkan wilayah berbeda menghadap Matahari pada waktu yang berbeda."},
+    {level:"Sedang",concept:"Revolusi Bumi",visual:"orbit",type:"tf",q:"Revolusi Bumi merupakan penyebab utama pergantian siang dan malam.",a:"false",why:"Pergantian siang dan malam disebabkan rotasi, bukan revolusi."},
+    {level:"Sedang",concept:"Siang dan malam",visual:"daynight",type:"mc",q:"Pada gambar, sisi Bumi yang menerima cahaya Matahari mengalami ...",opts:["Malam","Siang","Musim dingin","Gerhana setiap saat"],a:1,why:"Sisi yang mendapat cahaya Matahari mengalami siang."},
+    {level:"Sedang",concept:"Rotasi Bumi",visual:"rotation",type:"mc",q:"Jika Bumi tidak berotasi, akibat yang paling langsung terhadap pola siang-malam adalah ...",opts:["Pergantian siang dan malam harian tidak berlangsung seperti sekarang","Bumi langsung berhenti berevolusi","Matahari menjadi lebih kecil","Bulan tidak lagi memiliki fase"],a:0,why:"Rotasi menghasilkan siklus harian siang dan malam."},
+    {level:"Sedang",concept:"Revolusi Bumi",visual:"seasons",type:"mc",q:"Peristiwa yang berkaitan dengan revolusi Bumi adalah ...",opts:["Pergantian siang dan malam","Perbedaan waktu harian","Pergantian tahun","Gerak semu harian Matahari"],a:2,why:"Revolusi Bumi menjadi dasar penentuan satu tahun."},
+    {level:"Sedang",concept:"Siang dan malam",visual:"daynight",type:"tf",q:"Malam terjadi karena bagian Bumi yang mengalami malam tidak menerima cahaya Matahari secara langsung.",a:"true",why:"Bagian yang membelakangi Matahari berada dalam keadaan malam."},
+
+    {level:"Sulit",concept:"Penyebab siang dan malam",visual:"daynight",type:"mc",q:"Seorang siswa berkata, “Malam terjadi karena Matahari bergerak menjauh dari Bumi.” Tanggapan yang tepat adalah ...",opts:["Benar, Matahari menjauh setiap malam","Keliru, malam terjadi karena Bumi berotasi sehingga wilayah itu membelakangi Matahari","Benar, Bumi berhenti berputar saat malam","Keliru, malam terjadi karena Bulan menutupi Matahari"],a:1,why:"Malam bukan karena Matahari menjauh. Rotasi Bumi membuat suatu wilayah tidak menghadap Matahari."},
+    {level:"Sulit",concept:"Penyebab siang dan malam",visual:"rotation",type:"mc",q:"Mengapa dua kota yang berjauhan dapat mengalami siang dan malam pada waktu yang sama?",opts:["Karena Bumi berbentuk datar","Karena Bumi berotasi dan kedua kota berada pada posisi berbeda terhadap Matahari","Karena Matahari hanya menyinari satu kota","Karena Bumi tidak bergerak"],a:1,why:"Bentuk Bumi dan rotasinya membuat wilayah berbeda menerima cahaya pada waktu yang berbeda."},
+    {level:"Sulit",concept:"Rotasi dan revolusi",visual:"orbit",type:"tf",q:"Rotasi dan revolusi adalah dua gerak Bumi yang berbeda dan memiliki akibat yang berbeda.",a:"true",why:"Rotasi berkaitan dengan siang-malam dan perbedaan waktu; revolusi berkaitan dengan tahun."},
+    {level:"Sulit",concept:"Penyebab siang dan malam",visual:"daynight",type:"fill",q:"Siang dan malam terjadi karena Bumi berputar pada ____-nya.",a:["poros","sumbunya"],why:"Bumi berotasi pada porosnya."},
+    {level:"Sulit",concept:"Revolusi Bumi",visual:"seasons",type:"mc",q:"Mengapa satu tahun memiliki sekitar 365 hari?",opts:["Karena Bumi berotasi 365 kali","Karena Bumi membutuhkan sekitar 365,25 hari untuk satu revolusi","Karena Bulan mengelilingi Bumi 12 kali","Karena Matahari berputar mengelilingi Bumi"],a:1,why:"Satu tahun berkaitan dengan satu kali revolusi Bumi."},
+    {level:"Sulit",concept:"Penyebab siang dan malam",visual:"daynight",type:"mc",q:"Pernyataan yang paling tepat untuk memperbaiki miskonsepsi tentang siang dan malam adalah ...",opts:["Matahari menghilang ketika malam","Bumi berputar sehingga tiap wilayah bergantian menghadap Matahari","Bulan menghasilkan cahaya siang","Bumi mengelilingi Matahari setiap 24 jam"],a:1,why:"Pergantian siang dan malam merupakan akibat rotasi Bumi."}
+  ];
+
+  let started = false;
+  let submitted = false;
+
+  const startBtn = document.getElementById("startBtn");
+  const quizSection = document.getElementById("quizSection");
+  const quizForm = document.getElementById("quizForm");
+  const questionsContainer = document.getElementById("questions");
+
+  function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+      "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+    }[char]));
+  }
+
+  function renderQuestions() {
+    questionsContainer.innerHTML = questions.map((item, i) => {
+      const choices = item.type === "mc"
+        ? item.opts.map((option, j) => `
+          <label class="flex gap-3 items-start p-3 rounded-xl border border-slate-200 hover:bg-violet-50 cursor-pointer">
+            <input type="radio" name="q${i}" value="${j}" class="mt-1">
+            <span>${String.fromCharCode(65+j)}. ${escapeHTML(option)}</span>
+          </label>`).join("")
+        : item.type === "tf"
+          ? `
+            <label class="flex gap-3 items-center p-3 rounded-xl border border-slate-200 hover:bg-violet-50 cursor-pointer">
+              <input type="radio" name="q${i}" value="true">
+              <span>Benar</span>
+            </label>
+            <label class="flex gap-3 items-center p-3 rounded-xl border border-slate-200 hover:bg-violet-50 cursor-pointer">
+              <input type="radio" name="q${i}" value="false">
+              <span>Salah</span>
+            </label>`
+          : `<input name="q${i}" type="text" class="w-full border-2 border-violet-200 rounded-xl p-3 focus:outline-none focus:border-violet-500" placeholder="Tuliskan jawabanmu...">`;
+
+      const levelColor = item.level === "Mudah" ? "bg-emerald-100 text-emerald-800" :
+                         item.level === "Sedang" ? "bg-amber-100 text-amber-800" :
+                         "bg-rose-100 text-rose-800";
+
+      return `
+        <article class="question-card bg-white rounded-2xl shadow p-4 md:p-5" id="card${i}">
+          <div class="flex flex-wrap justify-between gap-2 items-center">
+            <span class="font-extrabold text-violet-700">Soal ${i+1}</span>
+            <span class="text-xs font-bold rounded-full px-3 py-1 ${levelColor}">${item.level}</span>
+          </div>
+          <div class="visual rounded-xl my-3 p-3">${visualSVG(item.visual)}</div>
+          <p class="font-semibold leading-relaxed mb-3">${escapeHTML(item.q)}</p>
+          <div class="space-y-2">${choices}</div>
+          <p class="feedback hidden mt-3 text-sm font-bold"></p>
+        </article>`;
+    }).join("");
+
+    questionsContainer.querySelectorAll("input").forEach(input => {
+      input.addEventListener("change", updateProgress);
+      input.addEventListener("input", updateProgress);
+    });
+  }
+
+  function updateProgress() {
+    let count = 0;
+    questions.forEach((item, i) => {
+      const answer = quizForm.elements[`q${i}`];
+      if (item.type === "fill") {
+        if (answer && answer.value.trim()) count++;
+      } else if (quizForm.querySelector(`input[name="q${i}"]:checked`)) {
+        count++;
+      }
+    });
+    document.getElementById("progress").textContent = `${count}/${questions.length} dijawab`;
+    document.getElementById("progressBar").style.width = `${count / questions.length * 100}%`;
+  }
+
+  function normalize(text) {
+    return String(text).trim().toLowerCase().replace(/\s+/g, " ").replace(",", ".");
+  }
+
+  function getAnswer(i) {
+    const item = questions[i];
+    if (item.type === "fill") return quizForm.elements[`q${i}`].value.trim();
+    const selected = quizForm.querySelector(`input[name="q${i}"]:checked`);
+    return selected ? selected.value : "";
+  }
+
+  function isCorrect(item, answer) {
+    if (!answer) return false;
+    if (item.type === "mc") return Number(answer) === item.a;
+    if (item.type === "tf") return answer === item.a;
+    return item.a.some(accepted => normalize(answer) === normalize(accepted));
+  }
+
+  function displayAnswer(item) {
+    if (item.type === "mc") return item.opts[item.a];
+    if (item.type === "tf") return item.a === "true" ? "Benar" : "Salah";
+    return item.a[0];
+  }
+
+  function showResults() {
+    let totalCorrect = 0;
+    const byLevel = {
+      "Mudah": {correct:0,total:0},
+      "Sedang": {correct:0,total:0},
+      "Sulit": {correct:0,total:0}
+    };
+    const byConcept = {};
+
+    questions.forEach((item, i) => {
+      const answer = getAnswer(i);
+      const correct = isCorrect(item, answer);
+      if (correct) totalCorrect++;
+
+      byLevel[item.level].total++;
+      if (correct) byLevel[item.level].correct++;
+
+      if (!byConcept[item.concept]) byConcept[item.concept] = {correct:0,total:0};
+      byConcept[item.concept].total++;
+      if (correct) byConcept[item.concept].correct++;
+
+      const feedback = document.querySelector(`#card${i} .feedback`);
+      feedback.classList.remove("hidden");
+      feedback.className = `feedback mt-3 text-sm font-bold ${correct ? "text-emerald-700" : "text-rose-700"}`;
+      feedback.textContent = correct ? "✅ Jawaban benar!" : "❌ Belum tepat.";
+    });
+
+    const score = Math.round(totalCorrect / questions.length * 100);
+    document.getElementById("score").textContent = `${score}`;
+    document.getElementById("scoreText").textContent = `${totalCorrect} dari ${questions.length} soal benar`;
+    document.getElementById("resultStudent").textContent =
+      `${document.getElementById("studentName").value} • Absen ${document.getElementById("studentNumber").value} • Kelas ${document.getElementById("studentClass").value}`;
+
+    document.getElementById("levelAnalysis").innerHTML = Object.entries(byLevel).map(([level, data]) => {
+      const percent = Math.round(data.correct / data.total * 100);
+      return `
+        <div class="rounded-2xl p-4 ${level === "Mudah" ? "bg-emerald-50" : level === "Sedang" ? "bg-amber-50" : "bg-rose-50"}">
+          <p class="font-bold">${level}</p>
+          <p class="text-2xl font-extrabold mt-1">${data.correct}/${data.total}</p>
+          <p class="text-sm">${percent}% benar</p>
+        </div>`;
+    }).join("");
+
+    document.getElementById("conceptAnalysis").innerHTML = Object.entries(byConcept).map(([concept, data]) => {
+      const percent = Math.round(data.correct / data.total * 100);
+      const message = percent >= 80 ? "Pemahaman cukup baik." :
+                      percent >= 50 ? "Perlu latihan tambahan." :
+                      "Perlu dipelajari kembali.";
+      return `
+        <div class="bg-white rounded-xl p-3 border border-sky-100">
+          <div class="flex justify-between gap-3">
+            <p class="font-bold">${escapeHTML(concept)}</p>
+            <p class="font-bold text-violet-700">${data.correct}/${data.total}</p>
+          </div>
+          <div class="w-full bg-slate-200 h-2 rounded-full mt-2">
+            <div class="bg-sky-500 h-2 rounded-full" style="width:${percent}%"></div>
+          </div>
+          <p class="text-sm mt-1 text-slate-600">${message}</p>
+        </div>`;
+    }).join("");
+
+    document.getElementById("answerReview").innerHTML = questions.map((item, i) => {
+      const answer = getAnswer(i);
+      const correct = isCorrect(item, answer);
+      let studentAnswer = answer;
+      if (item.type === "mc" && answer !== "") studentAnswer = item.opts[Number(answer)];
+      if (item.type === "tf" && answer !== "") studentAnswer = answer === "true" ? "Benar" : "Salah";
+      if (!studentAnswer) studentAnswer = "Tidak dijawab";
+
+      return `
+        <div class="rounded-xl border ${correct ? "border-emerald-200 bg-emerald-50" : "border-rose-200 bg-rose-50"} p-3">
+          <p class="font-bold">${correct ? "✅" : "❌"} Soal ${i+1}. ${escapeHTML(item.q)}</p>
+          <p class="text-sm mt-1">Jawaban siswa: <b>${escapeHTML(studentAnswer)}</b></p>
+          <p class="text-sm">Jawaban tepat: <b>${escapeHTML(displayAnswer(item))}</b></p>
+          <p class="text-sm text-slate-600 mt-1">${escapeHTML(item.why)}</p>
+        </div>`;
+    }).join("");
+
+    document.getElementById("quizSection").classList.add("hidden");
+    document.getElementById("resultSection").classList.remove("hidden");
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  startBtn.addEventListener("click", () => {
+    const name = document.getElementById("studentName").value.trim();
+    const number = document.getElementById("studentNumber").value.trim();
+    const studentClass = document.getElementById("studentClass").value.trim();
+
+    if (!name || !number || !studentClass) {
+      alert("Lengkapi nama, nomor absen, dan kelas terlebih dahulu.");
+      return;
+    }
+    if (started) return;
+
+    started = true;
+    renderQuestions();
+    document.getElementById("identity").classList.add("hidden");
+    quizSection.classList.remove("hidden");
+    window.scrollTo({top:0, behavior:"smooth"});
+  });
+
+  quizForm.addEventListener("submit", event => {
+    event.preventDefault();
+    if (submitted) return;
+
+    const unanswered = questions.filter((item, i) => {
+      const answer = getAnswer(i);
+      return !answer.trim();
+    }).length;
+
+    if (unanswered > 0) {
+      const confirmSubmit = confirm(`Masih ada ${unanswered} soal yang belum dijawab. Tetap kirim jawaban?`);
+      if (!confirmSubmit) return;
+    }
+
+    submitted = true;
+    showResults();
+
+    // Kuis dikunci setelah jawaban dikirim.
+    quizForm.querySelectorAll("input").forEach(input => input.disabled = true);
+    document.getElementById("submitBtn").disabled = true;
+  });
+
+  document.getElementById("exitBtn").addEventListener("click", () => {
+    // Browser mungkin mencegah halaman menutup tab yang dibuka manual.
+    window.close();
+    document.getElementById("exitMessage").classList.remove("hidden");
+  });
+</script>
+</body>
+</html>
